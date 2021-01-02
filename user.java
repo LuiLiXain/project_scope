@@ -49,12 +49,13 @@ public class user {
 	}
 	
 	public String changeStudentInf(String oldStudentNum, String chaStudentNum, 
-			String chaStudentName, int chaStudentYear) throws IOException {
-		if (oldStudentNum.equals(chaStudentName) && this.account.indexOf(chaStudentNum)!=-1) {
+			String chaStudentPass, String chaStudentName, int chaStudentYear) throws IOException {
+		if (!oldStudentNum.equals(chaStudentNum) && this.account.indexOf(chaStudentNum)!=-1) {
 			return "已有此編號";
 		}
 		int x = this.account.indexOf(oldStudentNum);
 		account.set(x,  chaStudentNum);
+		password.set(x, chaStudentPass);
 		name.set(x, chaStudentName);
 		idenity.set(x, chaStudentYear);
 		
@@ -78,12 +79,17 @@ public class user {
 		if (this.account.indexOf(delAccount) == -1) {
 			return "沒有這個人";
 		}
+		if (delAccount.equals(delAccount)) return "你無法刪除自己";
 		int x = this.account.indexOf(delAccount);
 		this.name.remove(x);
 		this.password.remove(x);
 		this.account.remove(x);
 		this.idenity.remove(x);
-		
+		classes cl = new classes();
+		ArrayList<ArrayList<Integer>> arr = cl.returnClass();
+		for (int i=0; i<arr.get(0).size(); i++) {
+			cl.delClassStudent(arr.get(0).get(i), arr.get(1).get(i), Integer.parseInt(delAccount));
+		}
 		writeAccountfile();
 		return "刪除成功";
 	}
@@ -93,7 +99,7 @@ public class user {
 			return "已有此學號";
 		}
 		int x=0;
-		while (this.idenity.get(x)<=idenity && this.account.get(x).compareTo(account)<0) x++;
+		while (x<=this.account.size()-1 && this.idenity.get(x)<=idenity && Integer.parseInt(this.account.get(x))<Integer.parseInt(account)) x++;
 		this.account.add(x, account);
 		this.password.add(x, password);
 		this.name.add(x, name);
@@ -118,7 +124,7 @@ public class user {
 				this.userName = name.get(account.indexOf(num1));
 		 		return name.get(account.indexOf(num1));
 			}
-			return "密碼錯物";
+			return "密碼錯誤";
 		}
 		return "帳號錯誤";
 	}
